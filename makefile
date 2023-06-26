@@ -22,3 +22,21 @@ profile:
 		--build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
 		.
 
+
+# ==============================================================================
+# Running from within k8s/kind
+KIND_CLUSTER := jeremy-profile-cluster
+
+dev-up:
+	kind create cluster \
+		--image kindest/node:v1.26.3@sha256:61b92f38dff6ccc29969e7aa154d34e38b89443af1a2c14e6cfbd2df6419c66f \
+		--name $(KIND_CLUSTER) \
+		--config zarf/k8s/dev/kind-config.yaml
+	
+	kubectl wait --timeout=120s --namespace=local-path-storage --for=condition=Available deployment/local-path-provisioner
+
+dev-status:
+	kubectl get nodes -o wide
+	kubectl get svc -o wide
+	kubectl get pods -o wide --watch --all-namespaces
+
