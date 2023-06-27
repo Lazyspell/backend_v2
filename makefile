@@ -54,3 +54,18 @@ dev-apply:
 
 dev-restart:
 	kubectl rollout restart deployment sales --namespace=profile-system
+
+dev-logs:
+	kubectl logs --namespace=profile-system -l app=profile --all-containers=true -f --tail=100 --max-log-requests=6 
+
+dev-describe:
+	kubectl describe nodes
+	kubectl describe svc
+
+dev-describe-deployment:
+	kubectl describe deployment --namespace=profile-system profile 
+
+dev-describe-sales:
+	kubectl describe pod --namespace=profile-system -l app=profile
+
+
