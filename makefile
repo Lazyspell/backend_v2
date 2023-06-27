@@ -35,6 +35,10 @@ dev-up:
 	
 	kubectl wait --timeout=120s --namespace=local-path-storage --for=condition=Available deployment/local-path-provisioner
 
+dev-down:
+	telepresence quit -s
+	kind delete cluster --name $(KIND_CLUSTER)
+
 dev-status:
 	kubectl get nodes -o wide
 	kubectl get svc -o wide

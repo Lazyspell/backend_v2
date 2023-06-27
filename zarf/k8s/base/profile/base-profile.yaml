@@ -8,7 +8,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: profile
-  namesapce: profile-system
+  namespace: profile-system
 spec:
   selector:
     matchLabels:
