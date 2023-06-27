@@ -65,7 +65,7 @@ dev-describe:
 dev-describe-deployment:
 	kubectl describe deployment --namespace=profile-system profile 
 
-dev-describe-sales:
+dev-describe-profile:
 	kubectl describe pod --namespace=profile-system -l app=profile
 
 
