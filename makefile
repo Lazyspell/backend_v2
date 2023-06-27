@@ -40,3 +40,13 @@ dev-status:
 	kubectl get svc -o wide
 	kubectl get pods -o wide --watch --all-namespaces
 
+
+dev-load:
+	kind load docker-image profile_api$(VERSION) --name $(KIND_CLUSTER)
+
+dev-apply:
+	kustomize build zarf/k8s/dev/profile | kubectl apply -f -
+	kubectl wait --timeout=120s --namespace=sales-system --for=condition=Available deployment/profile
+
+dev-restart:
+	kubectl rollout restart deployment sales --namespace=profile-system
