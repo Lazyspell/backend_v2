@@ -1,5 +1,8 @@
 run: 
-	go run app/services/profile_api/main.go
+	go run app/services/profile_api/main.go | go run app/tooling/logfmt/main.go
+	
+run-help: 
+	go run app/services/profile_api/main.go  --help
 	
 tidy:
 	go mod tidy 
@@ -12,7 +15,7 @@ tidy:
 # Example: $(shell git rev-parse --short HEAD)
 VERSION := 1.0
 
-all: profile metrics
+all: profile 
 
 profile:
 	docker build \
@@ -53,10 +56,10 @@ dev-apply:
 	kubectl wait --timeout=120s --namespace=profile-system --for=condition=Available deployment/profile
 
 dev-restart:
-	kubectl rollout restart deployment sales --namespace=profile-system
+	kubectl rollout restart deployment profile --namespace=profile-system
 
 dev-logs:
-	kubectl logs --namespace=profile-system -l app=profile --all-containers=true -f --tail=100 --max-log-requests=6 
+	kubectl logs --namespace=profile-system -l app=profile --all-containers=true -f --tail=100 --max-log-requests=6 | go run app/tooling/logfmt/main.go -service=PROFILE-API 
 
 dev-describe:
 	kubectl describe nodes
@@ -68,4 +71,8 @@ dev-describe-deployment:
 dev-describe-profile:
 	kubectl describe pod --namespace=profile-system -l app=profile
 
+
+dev-update: all dev-load dev-restart
+
+dev-update-apply: all dev-load dev-apply
 
