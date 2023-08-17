@@ -1,3 +1,14 @@
+# Other commands to install.
+
+GOLANG       := golang:1.20
+ALPINE       := alpine:3.17
+KIND         := kindest/node:v1.26.3
+POSTGRES     := postgres:15-alpine
+VAULT        := hashicorp/vault:1.13
+ZIPKIN       := openzipkin/zipkin:2.24
+TELEPRESENCE := docker.io/datawire/tel2:2.12.2
+# go install github.com/divan/expvarmon@latest
+
 run: 
 	go run app/services/profile_api/main.go | go run app/tooling/logfmt/main.go
 	
@@ -7,6 +18,12 @@ run-help:
 tidy:
 	go mod tidy 
 	go mod vendor
+
+metrics-local:
+	expvarmon -ports=":4000" -vars="build,requests,goroutines,errors,panics,mem:memstats.Alloc"
+
+metrics-view:
+	expvarmon -ports="profile-service.profile-system.svc.cluster.local:3001" -endpoint="/metrics" -vars="build,requests,goroutines,errors,panics,mem:memstats.Alloc"
 
 
 # ==============================================================================
@@ -29,6 +46,12 @@ profile:
 # ==============================================================================
 # Running from within k8s/kind
 KIND_CLUSTER := jeremy-profile-cluster
+
+
+dev-tel: 
+	kind load docker-image $(TELEPRESENCE) --name $(KIND_CLUSTER)
+	telepresence --context=kind-$(KIND_CLUSTER) helm install 
+	telepresence --context=kind-$(KIND_CLUSTER) connect
 
 dev-up:
 	kind create cluster \

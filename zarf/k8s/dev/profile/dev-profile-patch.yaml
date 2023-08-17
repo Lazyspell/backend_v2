@@ -23,4 +23,21 @@ spec:
             limits:
               cpu: "2000m" # Up to 2 full cores
             requests:
-              cpu: "2000m" # Use 1 full cores
+              cpu: "1000m" # Use 1 full cores
+---
+apiVersion: apps/v1
+kind: Service
+metadata:
+  name: profile-service
+  namespace: profile-system
+spec:
+  selector:
+    app: profile
+  type: ClusterIP
+  ports:
+    - name: profile-api
+      port: 3000
+      targetPort: profile-api
+    - name: profile-debug
+      port: 4000
+      targetPort: profile-debug
