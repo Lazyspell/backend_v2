@@ -16,7 +16,7 @@ WORKDIR /service/app/services/profile-api
 RUN go build -ldflags "-X main.build=${BUILD_REF}"
 
 # Run the Go Binary in Alpine
-FROM Alpine:3.18
+FROM alpine:3.18
 ARG BUILD_DATE
 ARG BUILD_REF
 RUN addgroup -g 1000 -S profile && \

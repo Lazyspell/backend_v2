@@ -1,4 +1,4 @@
-SHELL_PATH = /bin/zsh
+SHELL_PATH = /bin/bash
 # ==============================================================================
 # Define dependencies
 
@@ -16,7 +16,7 @@ PROMTAIL        := grafana/promtail:2.9.0
 KIND_CLUSTER    := profile-cluster
 NAMESPACE       := profile-system
 APP             := profile 
-BASE_IMAGE_NAME := personal_project/service
+BASE_IMAGE_NAME := personal_project/profile
 SERVICE_NAME    := profile-api
 VERSION         := 0.0.1
 SERVICE_IMAGE   := $(BASE_IMAGE_NAME)/$(SERVICE_NAME):$(VERSION)
@@ -27,13 +27,12 @@ METRICS_IMAGE   := $(BASE_IMAGE_NAME)/$(SERVICE_NAME)-metrics:$(VERSION)
 all: service
 
 service:
-	docker build \ 
-		-f zarf/docker/dockerfile.service \
-		-t $(SERVICE_NAME) \ 
-		--build-arg BUILD_REF=$(VERSION) \ 
-		--build-arg BUILD_DATE=`date -u "%Y-%m-%dT%H:%M:%SZ"`
-		.
-	
+		docker build \
+				-f zarf/docker/dockerfile.profile \
+				-t $(SERVICE_IMAGE) \
+				--build-arg BUILD_REF=$(VERSION) \
+				--build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+				.
 
 dev-up:
 	kind create cluster \
@@ -46,6 +45,17 @@ dev-up:
 
 dev-down:
 	kind delete cluster --name $(KIND_CLUSTER)
+
+dev-load:
+	cd zarf/k8s/dev/profile; kustomize edit set image profile-image=$(SERVICE_IMAGE)
+	kind load docker-image $(SERVICE_IMAGE) --name $(KIND_CLUSTER)
+	
+	# cd zarf/k8s/dev/profile; kustomize edit set image metrics-image=$(METRICS_IMAGE)
+	# kind load docker-image $(METRICS_IMAGE) --name $(KIND_CLUSTER)
+
+dev-apply:
+	kustomize build zarf/k8s/dev/profile | kubectl apply -f -
+	kubectl wait pods --namespace=$(NAMESPACE) --selector app=$(APP) --for=condition=Ready
 
 dev-status:
 	kubectl get nodes -o wide

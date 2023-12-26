@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- ../../base/profile/
+patches:
+- path: ./dev-profile-patch-deploy.yaml
+images:
+- name: profile-image
+  newName: personal_project/profile/profile-api
+  newTag: 0.0.1
+- name: service-image
+  newName: personal_project/profile/profile-api
+  newTag: 0.0.1
