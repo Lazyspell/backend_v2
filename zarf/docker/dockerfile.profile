@@ -7,7 +7,7 @@ ARG BUILD_REF
 RUN mkdir /backend
 COPY . /backend_v2
 WORKDIR /backend_v2/app/services/profile-api/
-RUN go build -ldflags "-X main.build=${BUILD_REF}"
+RUN go build -o profile-backend-api -ldflags "-X main.build=${BUILD_REF}"
 
 
 FROM alpine:3.17
@@ -15,33 +15,12 @@ ARG BUILD_DATE
 ARG BUILD_REF
 RUN addgroup -g 1000 -S profile && \
     adduser -u 1000 -h /backend_v2 -G profile -S profile
-COPY --from=build_profile-api --chown=profile:profile /backend_v2/app/services/profile-api/profile-api /backend_v2/profile-api
+# reason name of binary code built from line 10
+COPY --from=build_profile-api --chown=profile:profile /backend_v2/app/services/profile-api/profile-backend-api /backend_v2/profile-api
 RUN chmod +x /backend_v2/profile-api
 RUN pwd
 USER profile
 CMD ["backend_v2/profile-api"]
-
-# Copy the source code into the container. 
-# COPY . /backend_v2
-
-
-# # Build the service binary 
-# WORKDIR /backend_v2/app/services/profile-api/
-# RUN go build -ldflags "-X main.build=${BUILD_REF}"
-
-
-# # Run the Go Binary in Alpine.
-# FROM alpine:3.17
-# ARG BUILD_DATE
-# ARG BUILD_REF
-# RUN addgroup -g 1000 -S profile && \
-#     adduser -u 1000 -h /backend_v2 -G profile -S profile
-# # COPY --from=build_profile-api --chown=profile:profile /service/zarf/keys/. /service/zarf/keys/.
-# # COPY --from=build_profile-api --chown=profile:profile /service/app/tooling/profile-admin/profile-admin /service/profile-admin
-# COPY --from=build_profile-api --chown=profile:profile /backend_v2/app/services/profile-api /backend/profile-api
-# WORKDIR /backend
-# USER profile
-# CMD ["./profile-api"]
 
 LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.title="profile-api" \
