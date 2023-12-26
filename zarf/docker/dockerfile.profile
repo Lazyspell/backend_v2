@@ -15,7 +15,7 @@ ARG BUILD_DATE
 ARG BUILD_REF
 RUN addgroup -g 1000 -S profile && \
     adduser -u 1000 -h /backend_v2 -G profile -S profile
-COPY --from=build_profile-api --chown=profile:profile /backend_v2/app/services/profile-api /backend_v2/profile-api
+COPY --from=build_profile-api --chown=profile:profile /backend_v2/app/services/profile-api/profile-api /backend_v2/profile-api
 RUN chmod +x /backend_v2/profile-api
 RUN pwd
 USER profile
