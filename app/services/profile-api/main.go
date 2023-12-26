@@ -32,11 +32,11 @@ func main() {
 func run(log *zap.SugaredLogger) error {
 	//-------------------------------------------------------
 	// GOMAXPROCS
-	log.Infow("startup", "GOMAXPROCS", runtime.GOMAXPROCS(0))
+	log.Infow("startup", "GOMAXPROCS", runtime.GOMAXPROCS(0), "BUILD-", build)
 
 	//-------------------------------------------------------
 	shtudown := make(chan os.Signal, 1)
-	signal.Notify(shtudown, syscall.SIGINT, syscall.SIGABRT)
+	signal.Notify(shtudown, syscall.SIGINT, syscall.SIGTERM)
 
 	sig := <-shtudown
 	log.Infow("shtudown", "status", "shutdown started", "signal", sig)
