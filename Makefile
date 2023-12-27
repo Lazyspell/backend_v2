@@ -87,4 +87,7 @@ tidy:
 	go mod tidy
 	go mod vendor
 
+metrics-view-local-sc:
+	expvarmon -ports="localhost:4000" -vars="build,request,goroutines,errors,panic,mem:memstats.Alloc"
+
 

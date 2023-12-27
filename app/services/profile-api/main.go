@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/ardanlabs/conf/v3"
-	"github.com/jelam2474/backend_v2/business/web/v1/debug"
-	"github.com/jelam2474/backend_v2/foundation/logger"
+	"github.com/lazyspell/backend_v2/business/web/v1/debug"
+	"github.com/lazyspell/backend_v2/foundation/logger"
 	"go.uber.org/zap"
 )
 
