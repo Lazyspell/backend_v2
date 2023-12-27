@@ -16,7 +16,7 @@ spec:
       targetPort: profile-api
     - name: profile-api-debug
       port: 4000
-      targetPort: profile-api-debug
+      targetPort: profile-debug
     # - name: metrics-debug
     #   port: 4001
     #   targetPort: metrics-debug

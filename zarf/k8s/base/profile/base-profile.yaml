@@ -30,7 +30,7 @@ spec:
           ports:
             - name: profile-api
               containerPort: 3000
-            - name: profile-api-debug
+            - name: profile-debug
               containerPort: 4000
 
           env:
