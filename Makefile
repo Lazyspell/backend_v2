@@ -71,9 +71,18 @@ dev-status:
 	kubectl get pods -o wide --watch --all-namespaces
 
 dev-logs:
-	kubectl logs --namespace=$(NAMESPACE) -l app=$(APP) --all-containers=true -f --tail=100 
+	kubectl logs --namespace=$(NAMESPACE) -l app=$(APP) --all-containers=true -f --tail=100 | go run app/tooling/logfmt/main.go -service=$(SERVICE_NAME) 
+
+dev-describe-deployment:
+	kubectl describe deployment --namespace=$(NAMESPACE) $(APP)
+
+dev-describe-profile:
+	kubectl describe pod deployment --namespace=$(NAMESPACE) -l app=$(APP)
+
 run-local:
-	go run app/services/profile-api/main.go
+	go run app/services/profile-api/main.go | go run app/tooling/logfmt/main.go -service=$(SERVICE_NAME)
+run-local-help:
+	go run app/services/profile-api/main.go --help
 tidy: 
 	go mod tidy
 	go mod vendor

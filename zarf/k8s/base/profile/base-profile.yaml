@@ -26,3 +26,8 @@ spec:
       containers:
         - name: profile-api
           image: profile-image
+          env:
+            - name: GOMAXPROCS
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.cpu

@@ -22,3 +22,26 @@ spec:
     spec:
       dnsPolicy: ClusterFirstWithHostNet
       hostNetwork: true
+
+      containers:
+        - name: profile-api
+          resources:
+            requests:
+              cpu: "1500m"
+              memory: 500Mi
+            limits:
+              cpu: "1500m"
+              memory: 500Mi
+
+        #   volumeMounts:
+        #     - name: vault
+        #       mountPath: /vault
+
+        # - name: metrics
+        #   resources:
+        #     requests:
+        #       cpu: "500m"
+        #       memory: 250Mi
+        #     limits:
+        #       cpu: "500m"
+        #       memory: 250Mi
