@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: profile-api
+  namespace: profile-system
+
+spec:
+  selector:
+    app: profiile
+
+  type: ClusterIP
+
+  ports:
+    - name: profile-api
+      port: 3000
+      targetPort: profile-api
+    - name: profile-api-debug
+      port: 4000
+      targetPort: profile-api-debug
+    # - name: metrics-debug
+    #   port: 4001
+    #   targetPort: metrics-debug

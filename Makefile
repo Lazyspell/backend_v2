@@ -12,6 +12,7 @@ PROMETHEUS      := prom/prometheus:v2.48.0
 TEMPO           := grafana/tempo:2.3.0
 LOKI            := grafana/loki:2.9.0
 PROMTAIL        := grafana/promtail:2.9.0
+TELEPRESENCE 	:= datawire/tel2:2.13.1
 
 KIND_CLUSTER    := profile-cluster
 NAMESPACE       := profile-system
@@ -26,6 +27,11 @@ METRICS_IMAGE   := $(BASE_IMAGE_NAME)/$(SERVICE_NAME)-metrics:$(VERSION)
 
 all: service
 
+dev-bil:
+	kind load docker-image $(TELEPRESENCE) --name $(KIND_CLUSTER)
+	telepresence --context=kind-$(KIND_CLUSTER) helm install
+	telepresence --context=kind-$(KIND_CLUSTER) connect
+	
 service:
 		docker build \
 				-f zarf/docker/dockerfile.profile \
@@ -34,16 +40,25 @@ service:
 				--build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
 				.
 
-dev-up:
+dev-up-local:
 	kind create cluster \
 		--image $(KIND) \
 		--name $(KIND_CLUSTER) \
 		--config zarf/k8s/dev/kind-config.yaml
 
 	kubectl wait --timeout=120s --namespace=local-path-storage --for=condition=Available deployment/local-path-provisioner
+	kind load docker-image $(TELEPRESENCE) --name $(KIND_CLUSTER)
 
+dev-up: dev-up-local
+	telepresence --context=kind-$(KIND_CLUSTER) helm install
+	telepresence --context=kind-$(KIND_CLUSTER) connect
+
+
+dev-down-local:
+	kind delete cluster --name $(KIND_CLUSTER)
 
 dev-down:
+	telepresence quit -s
 	kind delete cluster --name $(KIND_CLUSTER)
 
 dev-load:
