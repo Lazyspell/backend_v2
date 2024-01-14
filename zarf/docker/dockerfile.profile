@@ -1,5 +1,5 @@
 # BUild the Go Binary 
-FROM golang:1.19 as build_profile-api
+FROM golang:1.20 as build_profile-api
 ENV CGO_ENABLED 0
 ARG BUILD_REF
 
@@ -15,7 +15,7 @@ ARG BUILD_DATE
 ARG BUILD_REF
 RUN addgroup -g 1000 -S profile && \
     adduser -u 1000 -h /backend_v2 -G profile -S profile
-# reason name of binary code built from line 10
+# reason for the second profile-api is because profile-api is the binary code built from line 10
 COPY --from=build_profile-api --chown=profile:profile /backend_v2/app/services/profile-api/profile-backend-api /backend_v2/profile-api
 RUN chmod +x /backend_v2/profile-api
 RUN pwd

@@ -12,7 +12,7 @@ PROMETHEUS      := prom/prometheus:v2.48.0
 TEMPO           := grafana/tempo:2.3.0
 LOKI            := grafana/loki:2.9.0
 PROMTAIL        := grafana/promtail:2.9.0
-TELEPRESENCE 	:= datawire/tel2:2.13.1
+TELEPRESENCE 	:= datawire/tel2:2.17.0
 
 KIND_CLUSTER    := profile-cluster
 NAMESPACE       := profile-system
@@ -27,8 +27,8 @@ METRICS_IMAGE   := $(BASE_IMAGE_NAME)/$(SERVICE_NAME)-metrics:$(VERSION)
 
 all: service
 
-dev-bil:
-	kind load docker-image $(TELEPRESENCE) --name $(KIND_CLUSTER)
+dev-bill:
+	kind load docker-image --name $(KIND_CLUSTER) $(TELEPRESENCE)
 	telepresence --context=kind-$(KIND_CLUSTER) helm install
 	telepresence --context=kind-$(KIND_CLUSTER) connect
 	
@@ -47,12 +47,9 @@ dev-up-local:
 		--config zarf/k8s/dev/kind-config.yaml
 
 	kubectl wait --timeout=120s --namespace=local-path-storage --for=condition=Available deployment/local-path-provisioner
-	kind load docker-image $(TELEPRESENCE) --name $(KIND_CLUSTER)
 
-dev-up: dev-up-local
-	telepresence --context=kind-$(KIND_CLUSTER) helm install
-	telepresence --context=kind-$(KIND_CLUSTER) connect
-
+dev-up: dev-up-local dev-update-apply dev-bill
+		
 
 dev-down-local:
 	kind delete cluster --name $(KIND_CLUSTER)
@@ -94,6 +91,11 @@ dev-describe-deployment:
 dev-describe-profile:
 	kubectl describe pod deployment --namespace=$(NAMESPACE) -l app=$(APP)
 
+test-endpoint:
+	http http://$(SERVICE_NAME).$(NAMESPACE).svc.cluster.local:4000/debug/pprof
+
+liveness: 
+	http -il http://#(SERVICE_NAME).$(NAMESPACE).svc.cluster.local:3000
 run-local:
 	go run app/services/profile-api/main.go | go run app/tooling/logfmt/main.go -service=$(SERVICE_NAME)
 run-local-help:

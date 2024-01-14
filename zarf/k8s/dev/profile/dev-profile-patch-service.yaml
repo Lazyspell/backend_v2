@@ -6,7 +6,7 @@ metadata:
 
 spec:
   selector:
-    app: profiile
+    app: profile
 
   type: ClusterIP
 
@@ -14,7 +14,7 @@ spec:
     - name: profile-api
       port: 3000
       targetPort: profile-api
-    - name: profile-api-debug
+    - name: profile-debug
       port: 4000
       targetPort: profile-debug
     # - name: metrics-debug
